@@ -70,6 +70,112 @@ tokens :-
 
   $white             ;
 
+  "UInt"             { tok Tok_UInt   }
+  "SInt"             { tok Tok_SInt   }
+  "Fixed"            { tok Tok_Fixed  }
+  "Clock"            { tok Tok_Clock  }
+  "Analog"           { tok Tok_Analog }
+
+  "circuit"          { tok Tok_Circuit   }
+  "module"           { tok Tok_Module    }
+  "extmodule"        { tok Tok_Extmodule }
+  "input"            { tok Tok_Input     }
+  "output"           { tok Tok_Output    }
+
+  "flip"             { tok Tok_Flip  }
+  "with"             { tok Tok_With  }
+  "reset"            { tok Tok_Reset }
+
+  "wire"             { tok Tok_Wire  }
+  "reg"              { tok Tok_Reg   }
+
+  "data-type"          { tok Tok_DataType       }
+  "depth"              { tok Tok_Depth          }
+  "read-latency"       { tok Tok_ReadLatency    }
+  "write-latency"      { tok Tok_WriteLatency   }
+  "read-under-write"   { tok Tok_ReadUnderWrite }
+  "reader"             { tok Tok_Reader         }
+  "writer"             { tok Tok_Writer         }
+  "readwriter"         { tok Tok_Readwriter     }
+
+  "inst"               { tok Tok_Inst }
+  "node"               { tok Tok_Node }
+
+  "invalid"          { tok Tok_Invalid }
+  "attach"           { tok Tok_Attach  }
+ 
+  "stop"             { tok Tok_Stop   }
+  "printf"           { tok Tok_Printf }
+  "skip"             { tok Tok_Skip   }
+
+  "old"              { tok Tok_Old       }
+  "new"              { tok Tok_New       }
+  "undefined"        { tok Tok_Undefined }
+ 
+  "when"             { tok Tok_When }
+  "else"             { tok Tok_Else }
+
+  "of"               { tok Tok_Of }
+  "is"               { tok Tok_Is }
+
+  "="                { tok Tok_Op_Eq   }
+  ":"                { tok Tok_Colon   }
+  ","                { tok Tok_Comma   }
+
+  "}"                { tok Tok_RBrace  }
+  "{"                { tok Tok_LBrace  }
+
+  "]"                { tok Tok_RBrack  }
+  "["                { tok Tok_LBrack  }
+
+  ")"                { tok Tok_RParen  }
+  "("                { tok Tok_LParen  }
+
+  "<"                { tok Tok_Op_Lt  }
+  ">"                { tok Tok_Op_Gt  }
+
+  "=>"               { tok Tok_Op_Arrow }
+
+  "<="               { tok Tok_Op_Connect }
+  "<-"               { tok Tok_Op_Partial }
+
+  "validif"          { tok Tok_ValidIf }
+
+  "mux"              { tok Tok_Mux }
+
+  "add"              { tok Tok_Add    }
+  "sub"              { tok Tok_Sub    }
+  "mul"              { tok Tok_Mul    }
+  "div"              { tok Tok_Div    }
+  "mod"              { tok Tok_Mod    }
+  "lt"               { tok Tok_Lt     }
+  "leq"              { tok Tok_Leq    }
+  "gt"               { tok Tok_Gt     }
+  "geq"              { tok Tok_Geq    }
+  "eq"               { tok Tok_Eq     }
+  "neq"              { tok Tok_Neq    }
+  "pad"              { tok Tok_Pad    }
+  "asUInt"           { tok Tok_AsUInt     }
+  "asSInt"           { tok Tok_AsSInt     }
+  "asClock"          { tok Tok_AsClock    }
+  "shl"              { tok Tok_Shiftleft     }
+  "shr"              { tok Tok_Shiftright    }
+  "dshl"             { tok Tok_DynShiftleft  }
+  "dshr"             { tok Tok_DynShiftright }
+  "cvt"              { tok Tok_Convert }
+  "neg"              { tok Tok_Neg  }
+  "not"              { tok Tok_Not  }
+  "and"              { tok Tok_And  }
+  "or"               { tok Tok_Or   }
+  "xor"              { tok Tok_Xor  }
+  "andr"             { tok Tok_AndR }
+  "orr"              { tok Tok_OrR  }
+  "xorr"             { tok Tok_XorR }
+  "cat"              { tok Tok_Cat  }
+  "bits"             { tok Tok_Bits }
+  "head"             { tok Tok_Head }
+  "tail"             { tok Tok_Tail }
+
   .                  { tok Tok_Unknown }
 
 {
