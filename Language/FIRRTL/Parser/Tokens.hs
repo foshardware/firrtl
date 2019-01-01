@@ -1,7 +1,6 @@
 
 module Language.FIRRTL.Parser.Tokens where
 
-import Data.Text
 import Text.Printf
 
 tokenString :: Token -> String
@@ -16,6 +15,7 @@ data Token = Token TokenName String Position deriving (Show, Eq)
 
 data TokenName
   = Tok_Undefined
+  | Tok_Number
   | Tok_Info
   | Tok_Ident
   | Tok_Fixed

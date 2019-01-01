@@ -9,7 +9,7 @@ import Language.FIRRTL.Parser.Parse
 import Language.FIRRTL.Parser.Tokens
 
 parseFile :: [(Text, Text)] -> FilePath -> Text -> Circuit
-parseFile env file content = circuit tokens
+parseFile _ file content = circuit tokens
   where
   tokens = fmap relocate $ lexer file content
   relocate :: Token -> Token

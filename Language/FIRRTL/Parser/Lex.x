@@ -70,6 +70,8 @@ tokens :-
 
   $white             ;
 
+  @decimalNumber     { tok Tok_Number }
+
   \@\[ @string \]    { tok Tok_Info   }
   @simpleIdentifier  { tok Tok_Ident  }
 

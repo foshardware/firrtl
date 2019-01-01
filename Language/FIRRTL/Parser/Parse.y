@@ -12,7 +12,7 @@ import Language.FIRRTL.Parser.Tokens
 %tokentype { Token }
 %error { parseError }
 
-%expect 0
+%expect 1
 
 %token
 
@@ -20,16 +20,29 @@ import Language.FIRRTL.Parser.Tokens
 "circuit"        { Token Tok_Circuit   _ _ }
 "module"         { Token Tok_Module    _ _ }
 "extmodule"      { Token Tok_Extmodule _ _ }
-
+"flip"           { Token Tok_Flip      _ _ }
 "input"          { Token Tok_Input     _ _ }
 "output"         { Token Tok_Output    _ _ }
 
+"UInt"           { Token Tok_UInt      _ _ }
+"SInt"           { Token Tok_SInt      _ _ }
+"Fixed"          { Token Tok_Fixed     _ _ }
 "Clock"          { Token Tok_Clock     _ _ }
+"Analog"         { Token Tok_Analog    _ _ }
 
 ":"              { Token Tok_Colon  _ _ }
+"<"              { Token Tok_Op_Lt  _ _ }
+">"              { Token Tok_Op_Gt  _ _ }
 
-info             { Token Tok_Info  _ _ }
-simpleIdentifier { Token Tok_Ident _ _ }
+"{"              { Token Tok_LBrace _ _ }
+"}"              { Token Tok_RBrace _ _ }
+
+"["              { Token Tok_LBrack _ _ }
+"]"              { Token Tok_RBrack _ _ }
+
+info             { Token Tok_Info   _ _ }
+number           { Token Tok_Number _ _ }
+simpleIdentifier { Token Tok_Ident  _ _ }
 
 %%
 
@@ -49,13 +62,29 @@ Dir
 | "output" { Output }
 
 Type :: { Type }
-: "Clock" { ClockType }
+: "UInt" opt(between("<", Int, ">")) { UIntType $2 }
+| "SInt" opt(between("<", Int, ">")) { SIntType $2 }
+| "Fixed" opt(between("<", Int, ">"))
+    opt(between("<", between("<", Int, ">"), ">")) { FixedType $2 $3 }
+| "Clock" { ClockType }
+| "Analog" opt(between("<", Int, ">")) { AnalogType $2 }
+| "{" many(Field) "}" { BundleType $2 }
+| Type "[" Int "]" { VectorType $1 $3 }
+
+Field :: { Field }
+: opt(Flip) Identifier ":" Type { Field $1 $2 $4 }
+
+Flip :: { Flip }
+: "flip" { Flip }
 
 Stmt :: { Statement }
 :  { Group [] }
 
 Info :: { Info }
 : info { Info(tokenString $1) }
+
+Int :: { Int }
+: number { read(tokenString $1) }
 
 Identifier :: { Identifier }
 : simpleIdentifier { tokenString $1 }
@@ -73,6 +102,8 @@ opt(p)
 : p { Just $1 }
 |   { Nothing }
 
+between(a, p, b)
+: a p b { $2 }
 
 {
 parseError :: [Token] -> a
