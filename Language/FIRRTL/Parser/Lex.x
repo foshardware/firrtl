@@ -70,6 +70,9 @@ tokens :-
 
   $white             ;
 
+  \@\[ @string \]    { tok Tok_Info   }
+  @simpleIdentifier  { tok Tok_Ident  }
+
   "UInt"             { tok Tok_UInt   }
   "SInt"             { tok Tok_SInt   }
   "Fixed"            { tok Tok_Fixed  }

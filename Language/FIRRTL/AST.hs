@@ -2,9 +2,8 @@
 
 module Language.FIRRTL.AST where
 
-import Data.Text (Text)
 
-type Identifier = Text
+type Identifier = String
 
 
 data Circuit = Circuit Identifier (Maybe Info) [Module]
@@ -46,7 +45,7 @@ data Statement
   | Attach [Exp] (Maybe Info)
   | Conditional Exp (Maybe Info) Statement (Maybe Statement)
   | Stop Exp Exp Int (Maybe Info)
-  | Printf Exp Exp Text [Exp] (Maybe Info)
+  | Printf Exp Exp String [Exp] (Maybe Info)
   | Empty (Maybe Info)
   | Group [Statement]
   deriving (Eq, Show)
@@ -57,14 +56,14 @@ data RuW = Old | New | Undefined
 data Flip = Flip
   deriving (Eq, Show)
 
-newtype Info = Info Text
+newtype Info = Info String
   deriving (Eq, Show)
 
 data Exp
   = UIntFromInt  (Maybe Int) Int
-  | UIntFromBits (Maybe Int) Text
+  | UIntFromBits (Maybe Int) String
   | SIntFromInt  (Maybe Int) Int
-  | SIntFromBits (Maybe Int) Text
+  | SIntFromBits (Maybe Int) String
   | Reference Identifier
   | Subfield Exp Identifier
   | Subindex Exp Int

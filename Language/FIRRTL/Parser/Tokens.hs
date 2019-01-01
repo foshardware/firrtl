@@ -16,6 +16,8 @@ data Token = Token TokenName String Position deriving (Show, Eq)
 
 data TokenName
   = Tok_Undefined
+  | Tok_Info
+  | Tok_Ident
   | Tok_Fixed
   | Tok_UInt
   | Tok_SInt
