@@ -1,0 +1,46 @@
+name:    firrtl
+version: 0.0.1
+
+category: Language, Hardware, Embedded
+
+synopsis: FIRRTL preprocessor, parser, and AST.
+
+description:
+  A parser and supporting a small subset of FIRRTL.
+  Intended for machine generated, synthesizable code.
+
+author:     Andreas Westerwick <westerwick@pconas.de>
+maintainer: Andreas Westerwick <westerwick@pconas.de>
+
+license:      BSD3
+license-file: LICENSE
+
+homepage: http://github.com/foshardware/firrtl
+
+build-type:    Simple
+cabal-version: >= 1.10
+
+library
+  default-language: Haskell2010
+  build-tools:
+    alex,
+    happy
+  build-depends:
+    base,
+    array,
+    text
+
+  exposed-modules:
+    Language.FIRRTL
+    Language.FIRRTL.AST
+    Language.FIRRTL.Parser
+    Language.FIRRTL.Parser.Lex
+    Language.FIRRTL.Parser.Parse
+    Language.FIRRTL.Parser.Tokens
+
+  ghc-options: -W
+
+source-repository head
+  type:     git
+  location: git://github.com/foshardware/firrtl.git
+
