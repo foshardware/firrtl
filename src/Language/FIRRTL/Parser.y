@@ -16,7 +16,6 @@ import Language.FIRRTL.Tokens
 %tokentype { Token }
 %error { parseError }
 
-%expect 1
 
 %token
 
@@ -28,12 +27,15 @@ import Language.FIRRTL.Tokens
 "input"          { Token Tok_Input     _ _ }
 "output"         { Token Tok_Output    _ _ }
 
+"wire"           { Token Tok_Wire      _ _ }
+
 "UInt"           { Token Tok_UInt      _ _ }
 "SInt"           { Token Tok_SInt      _ _ }
 "Fixed"          { Token Tok_Fixed     _ _ }
 "Clock"          { Token Tok_Clock     _ _ }
 "Analog"         { Token Tok_Analog    _ _ }
 
+","              { Token Tok_Comma  _ _ }
 ":"              { Token Tok_Colon  _ _ }
 "<"              { Token Tok_Op_Lt  _ _ }
 ">"              { Token Tok_Op_Gt  _ _ }
@@ -44,6 +46,9 @@ import Language.FIRRTL.Tokens
 "["              { Token Tok_LBrack _ _ }
 "]"              { Token Tok_RBrack _ _ }
 
+"("              { Token Tok_LParen _ _ }
+")"              { Token Tok_RParen _ _ }
+
 info             { Token Tok_Info   _ _ }
 number           { Token Tok_Number _ _ }
 simpleIdentifier { Token Tok_Ident  _ _ }
@@ -51,11 +56,11 @@ simpleIdentifier { Token Tok_Ident  _ _ }
 %%
 
 Circuit :: { Circuit }
-: "circuit" Identifier opt(Info) many(Module) { Circuit $2 $3 $4 }
+: "circuit" Identifier ":" opt(Info) "(" csv(Module) ")" { Circuit $2 $4 $6 }
 
 Module :: { Module }
-: "module" Identifier ":" opt(Info) many(Port) Stmt { Module $2 $4 $5 $6 }
-| "extmodule" Identifier ":" opt(Info) many(Port) { ExternalModule $2 $4 $5 }
+: "module" Identifier ":" opt(Info) "(" csv(Port) csv(Stmt) ")" { Module $2 $4 $6 $7 }
+| "extmodule" Identifier ":" opt(Info) "(" csv(Port) ")" { ExternalModule $2 $4 $6 }
 
 Port :: { Port }
 : Dir Identifier ":" Type opt(Info) { Port $1 $2 $4 $5 }
@@ -82,7 +87,7 @@ Flip :: { Flip }
 : "flip" { Flip }
 
 Stmt :: { Statement }
-:  { Group [] }
+: "wire" Identifier ":" Type opt(Info) { Wire $2 $4 $5 }
 
 Info :: { Info }
 : info { Info(content $1) }
@@ -93,6 +98,10 @@ Int :: { Int }
 Identifier :: { Identifier }
 : simpleIdentifier { content $1 }
 
+
+csv(p)
+: sepBy1(p, ",") { $1 }
+| { [] }
 
 sepBy1(p, s)
 : sepBy1(p, s) s p { $3 : $1 }

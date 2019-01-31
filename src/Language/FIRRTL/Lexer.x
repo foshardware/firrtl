@@ -90,7 +90,6 @@ tokens :-
 
   "flip"             { tok Tok_Flip  }
   "with"             { tok Tok_With  }
-  "reset"            { tok Tok_Reset }
 
   "wire"             { tok Tok_Wire  }
   "reg"              { tok Tok_Reg   }
