@@ -6,18 +6,25 @@ import Text.Printf
 
 content :: Token -> Text
 content (Token _ s _) = s
+content _ = mempty
 
 data Position = Position String Int Int deriving Eq
 
 instance Show Position where
   show (Position f l c) = printf "%s:%d:%d" f l c
 
-data Token = Token TokenName Text Position deriving (Show, Eq)
+data Token
+  = Empty
+  | Token TokenName Text Position
+  deriving (Show, Eq)
+
 
 data TokenName
   = Tok_Undefined
   | Tok_Newline
   | Tok_Indent
+  | Tok_Dedent
+  | Tok_EOF
   | Tok_Number
   | Tok_Info
   | Tok_Ident

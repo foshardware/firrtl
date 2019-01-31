@@ -4,6 +4,7 @@ module Language.FIRRTL.Lexer
   ( lexer
   ) where
 
+import Control.Monad.State
 import Data.Char (ord)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
@@ -14,6 +15,12 @@ import Language.FIRRTL.Tokens
 
 $any     = [.\n\r]
 @newline = [\n\r] | \r\n
+
+$space = [\ \t]
+
+@comment = \;[^\r\n]*
+
+
 
 -- Numbers
 
@@ -65,10 +72,11 @@ $sign = [\+\-]
 
 tokens :-
 
-  @newline           { tok Tok_Newline }
+  @newline           ;
 
-  ^$white+           { tok Tok_Indent  }
+  @newline $space+   { indentation }
 
+  ^@comment          ;
   $white             ;
 
   @decimalNumber     { tok Tok_Number }
@@ -189,8 +197,8 @@ tokens :-
 
 {
 
-wrap :: (T.Text -> TokenName) -> AlexPosn -> T.Text -> Token
-wrap f (AlexPn _ line col) s = Token (f s) s (Position "" line col)
+wrap :: (T.Text -> TokenName) -> AlexPosn -> T.Text -> P Token
+wrap f (AlexPn _ line col) s = pure $ Token (f s) s (Position "" line col)
 
 tok = wrap . const
 bstrTok f = wrap (f . T.encodeUtf8)
@@ -198,17 +206,20 @@ textTok = wrap
 charTok f = wrap (f . T.head)
 
 lexer :: String -> T.Text -> [Token]
-lexer file text = go (alexStartPos, '\n', text `T.snoc` '\n')
+lexer file text = filter emptyToken $ evalP $ go (alexStartPos, '\n', text `T.snoc` '\n')
   where
     go inp@(pos, _, cs) = case {-# SCC "alexScan" #-} alexScan inp 0 of
-        AlexEOF                -> []
+        AlexEOF                -> dedentRest pos
         AlexError inp'         -> error (errMsg inp')
         AlexSkip  inp'   _     -> go inp'
-        AlexToken inp' len act -> act pos (T.take len cs) : go inp'
+        AlexToken inp' len act -> (:) <$> act pos (T.take len cs) <*> go inp'
 
     errMsg (AlexPn _ line col, _, cs) =
         file ++ ": lexical error (line " ++ show line ++ ", col " ++ show col ++ ")\n"
              ++ "    near " ++ show (T.unpack $ T.take 40 cs)
+
+    emptyToken Empty = False
+    emptyToken _ = True
 
 -----------------------------------------------------------
 
@@ -236,6 +247,33 @@ alexGetByte i = case alexGetChar i of
 alexSkip :: Char -> Bool
 alexSkip '\xFEFF' = True
 alexSkip _        = False
+
+-----------------------------------------------------------
+
+type P a = State (Int, Int) a
+
+evalP :: P a -> a
+evalP m = evalState m (0, 0)
+
+indentation :: AlexPosn -> T.Text -> P Token
+indentation (AlexPn _ l c) s = do
+  (n, m) <- get
+  case T.length s `compare` n of
+    EQ -> pure Empty
+    LT -> do
+      put (T.length s, pred m)
+      pure $ Token Tok_Dedent s (Position "" l c)
+    GT -> do
+      put (T.length s, succ m)
+      pure $ Token Tok_Indent s (Position "" l c)
+
+
+dedentRest :: AlexPosn -> P [Token]
+dedentRest (AlexPn _ l c) = do
+  (_, m) <- get
+  put (0, 0)
+  pure $ replicate m $ Token Tok_Dedent mempty (Position "" l c)
+  
 
 -----------------------------------------------------------
 

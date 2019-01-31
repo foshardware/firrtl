@@ -26,6 +26,7 @@ library
   build-depends:
     base,
     array,
+    mtl,
     parsec,
     parsec-numbers,
     text

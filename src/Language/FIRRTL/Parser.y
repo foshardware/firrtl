@@ -16,7 +16,6 @@ import Language.FIRRTL.Tokens
 %tokentype { Token }
 %error { parseError }
 
-%expect 1
 
 %token
 

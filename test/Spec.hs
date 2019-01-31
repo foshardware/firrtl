@@ -11,5 +11,5 @@ import Language.FIRRTL.Preprocessor
 
 
 main :: IO ()
-main = putStrLn $ show $ circuit $ groupStatements $ lexer [] $ decodeUtf8 $(embedFile "sample/test_harness.fir")
+main = putStrLn $ show $ lexer [] $ decodeUtf8 $(embedFile "sample/test_harness.fir")
 
