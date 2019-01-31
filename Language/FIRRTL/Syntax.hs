@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Language.FIRRTL.AST where
+module Language.FIRRTL.Syntax where
 
 
 type Identifier = String

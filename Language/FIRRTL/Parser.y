@@ -1,11 +1,13 @@
 {
-module Language.FIRRTL.Parser.Parse where
+
+module Language.FIRRTL.Parser where
 
 import Data.Bits
 import Data.List
 
-import Language.FIRRTL.AST
-import Language.FIRRTL.Parser.Tokens
+import Language.FIRRTL.Syntax
+import Language.FIRRTL.Tokens
+
 }
 
 %name circuit

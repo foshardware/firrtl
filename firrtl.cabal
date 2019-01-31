@@ -1,13 +1,11 @@
 name:    firrtl
-version: 0.0.1
+version: 0.0.2.0
 
 category: Language, Hardware, Embedded
 
 synopsis: FIRRTL preprocessor, parser, and AST.
 
-description:
-  A parser and supporting a small subset of FIRRTL.
-  Intended for machine generated, synthesizable code.
+description: FIRRTL preprocessor, parser and AST
 
 author:     Andreas Westerwick <westerwick@pconas.de>
 maintainer: Andreas Westerwick <westerwick@pconas.de>
@@ -31,14 +29,12 @@ library
     text
 
   exposed-modules:
-    Language.FIRRTL
-    Language.FIRRTL.AST
+    Language.FIRRTL.Lexer
+    Language.FIRRTL.Syntax
+    Language.FIRRTL.Tokens
     Language.FIRRTL.Parser
-    Language.FIRRTL.Parser.Lex
-    Language.FIRRTL.Parser.Parse
-    Language.FIRRTL.Parser.Tokens
 
-  ghc-options: -W
+  ghc-options: -W -O2
 
 source-repository head
   type:     git

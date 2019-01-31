@@ -1,6 +1,6 @@
 {
 {-# OPTIONS_GHC -w #-}
-module Language.FIRRTL.Parser.Lex
+module Language.FIRRTL.Lexer
   ( lexer
   ) where
 
@@ -8,7 +8,7 @@ import Data.Char (ord)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 
-import Language.FIRRTL.Parser.Tokens
+import Language.FIRRTL.Tokens
 
 }
 

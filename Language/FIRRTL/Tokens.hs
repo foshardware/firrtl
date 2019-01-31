@@ -1,5 +1,5 @@
 
-module Language.FIRRTL.Parser.Tokens where
+module Language.FIRRTL.Tokens where
 
 import Text.Printf
 
