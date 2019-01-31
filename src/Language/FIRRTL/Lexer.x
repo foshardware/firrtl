@@ -84,6 +84,8 @@ tokens :-
   \@\[ @string_unquoted \]  { tok Tok_Info   }
   \@\[ @string \]           { tok Tok_Info   }
 
+  @string            { tok Tok_String }
+
   "UInt"             { tok Tok_UInt   }
   "SInt"             { tok Tok_SInt   }
   "Fixed"            { tok Tok_Fixed  }
@@ -117,6 +119,9 @@ tokens :-
   "invalid"          { tok Tok_Invalid }
   "attach"           { tok Tok_Attach  }
  
+  "defname"          { tok Tok_Defname }
+  "parameter"        { tok Tok_Parameter }
+
   "stop"             { tok Tok_Stop   }
   "printf"           { tok Tok_Printf }
   "skip"             { tok Tok_Skip   }

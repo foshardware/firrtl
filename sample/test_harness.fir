@@ -20,6 +20,7 @@ circuit TestHarness :
   extmodule plusarg_reader :
     output out : UInt<32>
 
-    clock is invalid
-    reset is invalid
-    auto is invalid
+    defname = plusarg_reader
+    parameter FORMAT = "tilelink_timeout=%d"
+    parameter DEFAULT = 0
+

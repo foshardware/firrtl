@@ -13,7 +13,7 @@ data Circuit = Circuit Identifier (Maybe Info) [Module]
 
 data Module
   = Module Identifier (Maybe Info) [Port] [Statement]
-  | ExternalModule Identifier (Maybe Info) [Port]
+  | ExternalModule Identifier (Maybe Info) [Port] [Statement]
   deriving (Eq, Show)
 
 data Port = Port Direction Identifier Type (Maybe Info)
@@ -48,7 +48,8 @@ data Statement
   | Conditional Exp (Maybe Info) Statement (Maybe Statement)
   | Stop Exp Exp Int (Maybe Info)
   | Printf Exp Exp String [Exp] (Maybe Info)
-  | Empty (Maybe Info)
+  | Defname Identifier
+  | Parameter Identifier (Either Int Text)
   deriving (Eq, Show)
 
 data RuW = Old | New | Undefined

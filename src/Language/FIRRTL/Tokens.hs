@@ -25,6 +25,9 @@ data TokenName
   | Tok_Indent
   | Tok_Dedent
   | Tok_EOF
+  | Tok_Defname
+  | Tok_Parameter
+  | Tok_String
   | Tok_Number
   | Tok_Info
   | Tok_Ident

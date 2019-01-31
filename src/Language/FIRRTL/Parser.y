@@ -19,6 +19,9 @@ import Language.FIRRTL.Tokens
 
 %token
 
+indent         { Token Tok_Indent   _ _ }
+dedent         { Token Tok_Dedent   _ _ }
+
 "add"            { Token Tok_Add       _ _ }
 "circuit"        { Token Tok_Circuit   _ _ }
 "module"         { Token Tok_Module    _ _ }
@@ -32,6 +35,10 @@ import Language.FIRRTL.Tokens
 "is"             { Token Tok_Is        _ _ }
 "invalid"        { Token Tok_Invalid   _ _ }
 
+
+"defname"        { Token Tok_Defname   _ _ }
+"parameter"      { Token Tok_Parameter _ _ }
+
 "UInt"           { Token Tok_UInt      _ _ }
 "SInt"           { Token Tok_SInt      _ _ }
 "Fixed"          { Token Tok_Fixed     _ _ }
@@ -40,6 +47,8 @@ import Language.FIRRTL.Tokens
 
 "<-"             { Token Tok_Op_Partial _ _ }
 "<="             { Token Tok_Op_Connect _ _ }
+
+"="              { Token Tok_Op_Eq  _ _  }
 
 "."              { Token Tok_Dot    _ _ }
 ","              { Token Tok_Comma  _ _ }
@@ -59,15 +68,16 @@ import Language.FIRRTL.Tokens
 info             { Token Tok_Info   _ _ }
 number           { Token Tok_Number _ _ }
 simpleIdentifier { Token Tok_Ident  _ _ }
+string           { Token Tok_String _ _ }
 
 %%
 
 Circuit :: { Circuit }
-: "circuit" Identifier ":" opt(Info) "(" csv(Module) ")" { Circuit $2 $4 $6 }
+: "circuit" Identifier ":" opt(Info) indent many(Module) dedent { Circuit $2 $4 $6 }
 
 Module :: { Module }
-: "module" Identifier ":" opt(Info) "(" csv(Port) csv(Stmt) ")" { Module $2 $4 $6 $7 }
-| "extmodule" Identifier ":" opt(Info) "(" csv(Port) ")" { ExternalModule $2 $4 $6 }
+: "module" Identifier ":" opt(Info) indent many(Port) many(Stmt) dedent { Module $2 $4 $6 $7 }
+| "extmodule" Identifier ":" opt(Info) indent many(Port) many(Stmt) dedent { ExternalModule $2 $4 $6 $7 }
 
 Port :: { Port }
 : Dir Identifier ":" Type opt(Info) { Port $1 $2 $4 $5 }
@@ -98,6 +108,9 @@ Stmt :: { Statement }
 | Exp "is" "invalid" opt(Info) { Invalidate $1 $4 }
 | Exp "<-" Exp opt(Info) { Connect $1 $3 $4 }
 | Exp "<=" Exp opt(Info) { PartialConnect $1 $3 $4 }
+| "defname" "=" Identifier { Defname $3 }
+| "parameter" Identifier "=" Int { Parameter $2 (Left $4) }
+| "parameter" Identifier "=" string { Parameter $2 (Right $ content $4) }
 
 Info :: { Info }
 : info { Info(content $1) }
@@ -124,7 +137,7 @@ sepBy1(p, s)
 | p { [$1] }
 
 many(p)
-: many(p) p { $2 : $1 }
+: p many(p) { $1 : $2 }
 | { [] } 
 
 opt(p)
