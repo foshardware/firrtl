@@ -60,6 +60,7 @@ data TokenName
   | Tok_Op_Eq
   | Tok_Colon
   | Tok_Comma
+  | Tok_Dot
   | Tok_RBrace
   | Tok_LBrace
   | Tok_RBrack

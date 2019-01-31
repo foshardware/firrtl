@@ -2,6 +2,7 @@ circuit TestHarness :
   module IntXbar :
     input clock : Clock
     input reset : UInt<1>
+    output auto : {flip int_in : UInt<1>[2], int_out : UInt<1>[2]}
 
     clock is invalid
     reset is invalid

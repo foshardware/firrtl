@@ -126,6 +126,7 @@ tokens :-
   "="                { tok Tok_Op_Eq   }
   ":"                { tok Tok_Colon   }
   ","                { tok Tok_Comma   }
+  "."                { tok Tok_Dot     }
 
   "}"                { tok Tok_RBrace  }
   "{"                { tok Tok_LBrace  }
