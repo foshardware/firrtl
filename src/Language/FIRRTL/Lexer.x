@@ -188,8 +188,14 @@ tokens :-
   .                  { tok Tok_Unknown }
 
 {
-tok :: TokenName -> AlexPosn -> String -> Token
-tok t (AlexPn _ l c) s = Token t s $ Position "" l c
+
+wrap :: (T.Text -> TokenName) -> AlexPosn -> T.Text -> Token
+wrap f (AlexPn _ line col) s = Token (f s) s (Position "" line col)
+
+tok = wrap . const
+bstrTok f = wrap (f . T.encodeUtf8)
+textTok = wrap
+charTok f = wrap (f . T.head)
 
 lexer :: String -> T.Text -> [Token]
 lexer file text = go (alexStartPos, '\n', text `T.snoc` '\n')
@@ -198,7 +204,7 @@ lexer file text = go (alexStartPos, '\n', text `T.snoc` '\n')
         AlexEOF                -> []
         AlexError inp'         -> error (errMsg inp')
         AlexSkip  inp'   _     -> go inp'
-        AlexToken inp' len act -> act pos (T.unpack $ T.take len cs) : go inp'
+        AlexToken inp' len act -> act pos (T.take len cs) : go inp'
 
     errMsg (AlexPn _ line col, _, cs) =
         file ++ ": lexical error (line " ++ show line ++ ", col " ++ show col ++ ")\n"
@@ -243,6 +249,7 @@ alexMove :: AlexPosn -> Char -> AlexPosn
 alexMove (AlexPn a l c) '\t' = AlexPn (a+1)  l     (((c+7) `div` 8)*8+1)
 alexMove (AlexPn a l _) '\n' = AlexPn (a+1) (l+1)   1
 alexMove (AlexPn a l c) _    = AlexPn (a+1)  l     (c+1)
+
 }
 
 

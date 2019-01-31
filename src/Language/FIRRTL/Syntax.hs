@@ -2,8 +2,10 @@
 
 module Language.FIRRTL.Syntax where
 
+import Data.Text (Text)
 
-type Identifier = String
+
+type Identifier = Text
 
 
 data Circuit = Circuit Identifier (Maybe Info) [Module]
@@ -56,14 +58,14 @@ data RuW = Old | New | Undefined
 data Flip = Flip
   deriving (Eq, Show)
 
-newtype Info = Info String
+newtype Info = Info Text
   deriving (Eq, Show)
 
 data Exp
   = UIntFromInt  (Maybe Int) Int
-  | UIntFromBits (Maybe Int) String
+  | UIntFromBits (Maybe Int) Text
   | SIntFromInt  (Maybe Int) Int
-  | SIntFromBits (Maybe Int) String
+  | SIntFromBits (Maybe Int) Text
   | Reference Identifier
   | Subfield Exp Identifier
   | Subindex Exp Int

@@ -2,8 +2,10 @@
 
 module Language.FIRRTL.Parser where
 
-import Data.Bits
-import Data.List
+import Data.Text (Text, unpack)
+
+import Text.Parsec
+import Text.ParserCombinators.Parsec.Number
 
 import Language.FIRRTL.Syntax
 import Language.FIRRTL.Tokens
@@ -83,13 +85,13 @@ Stmt :: { Statement }
 :  { Group [] }
 
 Info :: { Info }
-: info { Info(tokenString $1) }
+: info { Info(content $1) }
 
 Int :: { Int }
-: number { read(tokenString $1) }
+: number { integer $1 }
 
 Identifier :: { Identifier }
-: simpleIdentifier { tokenString $1 }
+: simpleIdentifier { content $1 }
 
 
 sepBy1(p, s)
@@ -111,10 +113,10 @@ between(a, p, b)
 parseError :: [Token] -> a
 parseError a = case a of
   []              -> error "Parse error: no tokens left to parse."
-  Token t s p : _ -> error $ "Parse error: unexpected token '" ++ s ++ "' (" ++ show t ++ ") at " ++ show p ++ "."
+  Token t s p : _ -> error $ "Parse error: unexpected token '" ++ unpack s ++ "' (" ++ show t ++ ") at " ++ show p ++ "."
 
-toString :: Token -> String
-toString = tail . init . tokenString
+integer :: Token -> Int
+integer = either (error . show) id . parse decimal "integer" . unpack . content
 
 }
 

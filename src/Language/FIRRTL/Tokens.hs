@@ -1,17 +1,18 @@
 
 module Language.FIRRTL.Tokens where
 
+import Data.Text (Text)
 import Text.Printf
 
-tokenString :: Token -> String
-tokenString (Token _ s _) = s
+content :: Token -> Text
+content (Token _ s _) = s
 
 data Position = Position String Int Int deriving Eq
 
 instance Show Position where
   show (Position f l c) = printf "%s:%d:%d" f l c
 
-data Token = Token TokenName String Position deriving (Show, Eq)
+data Token = Token TokenName Text Position deriving (Show, Eq)
 
 data TokenName
   = Tok_Undefined

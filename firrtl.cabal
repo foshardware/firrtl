@@ -26,6 +26,8 @@ library
   build-depends:
     base,
     array,
+    parsec,
+    parsec-numbers,
     text
 
   hs-source-dirs:
