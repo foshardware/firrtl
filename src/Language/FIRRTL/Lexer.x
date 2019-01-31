@@ -14,8 +14,6 @@ import Language.FIRRTL.Tokens
 
 $any     = [.\n\r]
 @newline = [\n\r] | \r\n
-@comment = "/*" $any* "*/"
-         | "//" .* @newline
 
 -- Numbers
 
@@ -55,6 +53,7 @@ $sign = [\+\-]
 
 -- Strings
 
+@string_unquoted = [^\r\n]*
 @string = \" [^\r\n]* \"
 
 -- Identifiers
@@ -66,14 +65,16 @@ $sign = [\+\-]
 
 tokens :-
 
-  @comment           ;
+  @newline           { tok Tok_Newline }
+
+  ^$white+           { tok Tok_Indent  }
 
   $white             ;
 
   @decimalNumber     { tok Tok_Number }
 
-  \@\[ @string \]    { tok Tok_Info   }
-  @simpleIdentifier  { tok Tok_Ident  }
+  \@\[ @string_unquoted \]  { tok Tok_Info   }
+  \@\[ @string \]           { tok Tok_Info   }
 
   "UInt"             { tok Tok_UInt   }
   "SInt"             { tok Tok_SInt   }
@@ -180,6 +181,9 @@ tokens :-
   "bits"             { tok Tok_Bits }
   "head"             { tok Tok_Head }
   "tail"             { tok Tok_Tail }
+
+
+  @simpleIdentifier  { tok Tok_Ident  }
 
   .                  { tok Tok_Unknown }
 
