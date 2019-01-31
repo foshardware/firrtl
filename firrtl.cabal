@@ -37,6 +37,7 @@ library
     Language.FIRRTL.Syntax
     Language.FIRRTL.Tokens
     Language.FIRRTL.Parser
+    Language.FIRRTL.Preprocessor
 
   ghc-options: -W -O2
 
