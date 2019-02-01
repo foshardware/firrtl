@@ -175,13 +175,13 @@ Exp :: { Exp }
 | Exp "." Identifier { Subfield $1 $3 }
 | Exp "[" Int "]" { Subindex $1 $3 }
 | PrimOp "(" csv(Exp) ")" { PrimOp $1 $3 }
-| "mux" "(" Exp "," Exp "," Exp ")" { Multiplexor $3 $5 $7 }
 | Int { Integer $1 }
 | String { String $1 }
 
 
 PrimOp :: { PrimOp }
-: "add"              { Add    }
+: "mux"              { Mux    }
+| "add"              { Add    }
 | "sub"              { Sub    }
 | "mul"              { Mul    }
 | "div"              { Div    }

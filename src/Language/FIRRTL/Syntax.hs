@@ -71,7 +71,6 @@ data Exp
   | Subfield Exp Identifier
   | Subindex Exp Int
   | Subaccess Exp Exp
-  | Multiplexor Exp Exp Exp
   | ValidIf Exp Exp
   | PrimOp PrimOp [Exp]
   | Integer Int
@@ -79,7 +78,8 @@ data Exp
   deriving (Eq, Show)
 
 data PrimOp
-  = Add
+  = Mux
+  | Add
   | Sub
   | Mul
   | Div
