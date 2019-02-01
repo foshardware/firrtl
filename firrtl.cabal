@@ -1,5 +1,5 @@
 name:    firrtl
-version: 0.0.2.0
+version: 0.0.2.1
 
 category: Language, Hardware, Embedded
 
@@ -48,7 +48,7 @@ test-suite firrtl-test
       Paths_firrtl
   hs-source-dirs:
       test
-  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base >=4.2
                      , firrtl
                      , array
