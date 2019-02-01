@@ -14,9 +14,13 @@ instance Show Position where
   show (Position f l c) = printf "%s:%d:%d" f l c
 
 data Token
-  = Empty
+  = Tokens [Token]
   | Token TokenName Text Position
   deriving (Show, Eq)
+
+normalize :: Token -> [Token]
+normalize (Tokens ts) = normalize =<< ts
+normalize t = [t]
 
 
 data TokenName

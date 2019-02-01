@@ -195,7 +195,7 @@ textTok = wrap
 charTok f = wrap (f . T.head)
 
 lexer :: String -> T.Text -> [Token]
-lexer file text = filter emptyToken $ evalP $ go (alexStartPos, '\n', text `T.snoc` '\n')
+lexer file text = normalize =<< evalP (go (alexStartPos, '\n', text `T.snoc` '\n'))
   where
     go inp@(pos, _, cs) = case {-# SCC "alexScan" #-} alexScan inp 0 of
         AlexEOF                -> dedentRest pos
@@ -207,8 +207,6 @@ lexer file text = filter emptyToken $ evalP $ go (alexStartPos, '\n', text `T.sn
         file ++ ": lexical error (line " ++ show line ++ ", col " ++ show col ++ ")\n"
              ++ "    near " ++ show (T.unpack $ T.take 40 cs)
 
-    emptyToken Empty = False
-    emptyToken _ = True
 
 -----------------------------------------------------------
 
@@ -239,29 +237,33 @@ alexSkip _        = False
 
 -----------------------------------------------------------
 
-type P a = State (Int, Int) a
+type P = State [Int]
 
 evalP :: P a -> a
-evalP m = evalState m (0, 0)
+evalP m = evalState m []
 
 indentation :: AlexPosn -> T.Text -> P Token
-indentation (AlexPn _ l c) s = do
-  (n, m) <- get
-  case T.length s `compare` n of
-    EQ -> pure Empty
-    LT -> do
-      put (T.length s, pred m)
-      pure $ Token Tok_Dedent s (Position "" l c)
-    GT -> do
-      put (T.length s, succ m)
+indentation pos@(AlexPn _ l c) s = do
+  xs <- get
+  case xs of
+    n : ns -> case T.length s `compare` n of
+      EQ -> pure $ Tokens []
+      LT -> do
+        put ns
+        t <- indentation pos s
+        pure $ Tokens [Token Tok_Dedent s (Position "" l c), t]
+      GT -> do
+        put $ T.length s : n : ns
+        pure $ Token Tok_Indent s (Position "" l c)
+    _ -> do
+      put [T.length s]
       pure $ Token Tok_Indent s (Position "" l c)
 
 
 dedentRest :: AlexPosn -> P [Token]
 dedentRest (AlexPn _ l c) = do
-  (_, m) <- get
-  put (0, 0)
-  pure $ replicate m $ Token Tok_Dedent mempty (Position "" l c)
+  ns <- get
+  pure $ Token Tok_Dedent mempty (Position "" l c) <$ ns
   
 
 -----------------------------------------------------------
