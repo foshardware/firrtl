@@ -46,8 +46,10 @@ dedent         { Token Tok_Dedent   _ _ }
 "reset"          { Token Tok_Reset     _ _ }
 "printf"         { Token Tok_Printf    _ _ }
 
-"mux"              { Token Tok_Mux     _ _ }
+"infer"          { Token Tok_Infer     _ _ }
+"mport"          { Token Tok_Mport     _ _ }
 
+"mux"              { Token Tok_Mux     _ _ }
 "add"              { Token Tok_Add     _ _ }
 "sub"              { Token Tok_Sub     _ _ }
 "mul"              { Token Tok_Mul     _ _ }
@@ -163,11 +165,12 @@ Stmt :: { Statement }
 | "reg" Identifier ":" Type "," Exp opt(WithReset) opt(Info) { Register $2 $4 $6 $7 $8 }
 | "cmem" Identifier ":" Type opt(Info) { Cmem $2 $4 $5 }
 | "inst" Identifier "of" Identifier opt(Info) { Instance $2 $4 $5 }
+| "infer" "mport" Identifier "=" Exp "," Identifier opt(Info) { Mport $3 $5 $7 $8 }
 | Exp "is" "invalid" opt(Info) { Invalidate $1 $4 }
 | Exp "<-" Exp opt(Info) { Connect $1 $3 $4 }
 | Exp "<=" Exp opt(Info) { PartialConnect $1 $3 $4 }
-| "when" Exp ":" opt(Info) indent many(Stmt) dedent "else" ":" indent many(Stmt) dedent { Conditional $2 $4 $6 $11 }
-| "when" Exp ":" opt(Info) indent many(Stmt) dedent { Conditional $2 $4 $6 [] }
+| "when" Exp ":" opt(Info) indent many(Stmt) dedent "else" ":" opt(Info) indent many(Stmt) dedent { Conditional $2 $4 $6 $10 $12 }
+| "when" Exp ":" opt(Info) indent many(Stmt) dedent { Conditional $2 $4 $6 Nothing [] }
 | "node" Identifier "=" Exp opt(Info) { Node $2 $4 $5 }
 | "defname" "=" Identifier { Defname $3 }
 | "parameter" Identifier "=" Exp { Parameter $2 $4 }

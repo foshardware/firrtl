@@ -41,12 +41,13 @@ data Statement
   | Cmem Identifier Type (Maybe Info)
   | Memory Identifier (Maybe Info) Type Int Int Int RuW [Identifier] [Identifier] [Identifier]
   | Instance Identifier Identifier (Maybe Info)
+  | Mport Identifier Exp Identifier (Maybe Info)
   | Node Identifier Exp (Maybe Info)
   | Connect Exp Exp (Maybe Info)
   | PartialConnect Exp Exp (Maybe Info)
   | Invalidate Exp (Maybe Info)
   | Attach [Exp] (Maybe Info)
-  | Conditional Exp (Maybe Info) [Statement] [Statement]
+  | Conditional Exp (Maybe Info) [Statement] (Maybe Info) [Statement]
   | Stop Exp Exp Int (Maybe Info)
   | Printf Exp Exp Text [Exp] (Maybe Info)
   | Skip (Maybe Info)
