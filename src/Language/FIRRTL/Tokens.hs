@@ -79,6 +79,8 @@ data TokenName
   | Tok_LParen
   | Tok_Op_Lt
   | Tok_Op_Gt
+  | Tok_Op_Lt_Lt
+  | Tok_Op_Gt_Gt
   | Tok_Op_Arrow
   | Tok_Op_Connect
   | Tok_Op_Partial

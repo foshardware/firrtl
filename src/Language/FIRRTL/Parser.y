@@ -16,6 +16,7 @@ import Language.FIRRTL.Tokens
 %tokentype { Token }
 %error { parseError }
 
+%expect 0
 
 %token
 
@@ -33,6 +34,8 @@ dedent         { Token Tok_Dedent   _ _ }
 "else"           { Token Tok_Else      _ _ }
 
 "wire"           { Token Tok_Wire      _ _ }
+"reg"            { Token Tok_Reg       _ _ }
+"with"           { Token Tok_With      _ _ }
 "node"           { Token Tok_Node      _ _ }
 "stop"           { Token Tok_Stop      _ _ }
 "skip"           { Token Tok_Skip      _ _ }
@@ -88,6 +91,8 @@ dedent         { Token Tok_Dedent   _ _ }
 "Clock"          { Token Tok_Clock     _ _ }
 "Analog"         { Token Tok_Analog    _ _ }
 
+"=>"             { Token Tok_Op_Arrow  _ _ }
+
 "<-"             { Token Tok_Op_Partial _ _ }
 "<="             { Token Tok_Op_Connect _ _ }
 
@@ -98,6 +103,9 @@ dedent         { Token Tok_Dedent   _ _ }
 ":"              { Token Tok_Colon  _ _ }
 "<"              { Token Tok_Op_Lt  _ _ }
 ">"              { Token Tok_Op_Gt  _ _ }
+
+"<<"             { Token Tok_Op_Lt_Lt _ _ }
+">>"             { Token Tok_Op_Gt_Gt _ _ }
 
 "{"              { Token Tok_LBrace _ _ }
 "}"              { Token Tok_RBrace _ _ }
@@ -133,8 +141,7 @@ Dir
 Type :: { Type }
 : "UInt" opt(between("<", Int, ">")) { UIntType $2 }
 | "SInt" opt(between("<", Int, ">")) { SIntType $2 }
-| "Fixed" opt(between("<", Int, ">"))
-    opt(between("<", between("<", Int, ">"), ">")) { FixedType $2 $3 }
+| "Fixed" opt(between("<", Int, ">")) opt(between("<<", Int, ">>")) { FixedType $2 $3 }
 | "Clock" { ClockType }
 | "Analog" opt(between("<", Int, ">")) { AnalogType $2 }
 | "{" csv(Field) "}" { BundleType $2 }

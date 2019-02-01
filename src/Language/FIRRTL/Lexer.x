@@ -127,6 +127,9 @@ tokens :-
   "<"                { tok Tok_Op_Lt  }
   ">"                { tok Tok_Op_Gt  }
 
+  "<<"               { tok Tok_Op_Lt_Lt }
+  ">>"               { tok Tok_Op_Gt_Gt }
+
   "=>"               { tok Tok_Op_Arrow }
 
   "<="               { tok Tok_Op_Connect }
