@@ -45,9 +45,10 @@ data Statement
   | PartialConnect Exp Exp (Maybe Info)
   | Invalidate Exp (Maybe Info)
   | Attach [Exp] (Maybe Info)
-  | Conditional Exp (Maybe Info) Statement (Maybe Statement)
+  | Conditional Exp (Maybe Info) [Statement] [Statement]
   | Stop Exp Exp Int (Maybe Info)
-  | Printf Exp Exp String [Exp] (Maybe Info)
+  | Printf Exp Exp Text [Exp] (Maybe Info)
+  | Skip (Maybe Info)
   | Defname Identifier
   | Parameter Identifier Exp
   deriving (Eq, Show)
@@ -78,5 +79,36 @@ data Exp
   deriving (Eq, Show)
 
 data PrimOp
-  = Bits
+  = Add
+  | Sub
+  | Mul
+  | Div
+  | Mod
+  | Lt
+  | Leq
+  | Gt
+  | Geq
+  | Eq
+  | Neq
+  | Pad
+  | AsUInt
+  | AsSInt
+  | AsClock
+  | Shl
+  | Shr
+  | Dshl
+  | Dshr
+  | Cvt
+  | Neg
+  | Not
+  | And
+  | Or
+  | Xor
+  | Andr
+  | Orr
+  | Xorr
+  | Cat
+  | Bits
+  | Head
+  | Tail
   deriving (Eq, Show)

@@ -22,8 +22,6 @@ import Language.FIRRTL.Tokens
 indent         { Token Tok_Indent   _ _ }
 dedent         { Token Tok_Dedent   _ _ }
 
-"add"            { Token Tok_Add       _ _ }
-"bits"           { Token Tok_Bits      _ _ }
 "circuit"        { Token Tok_Circuit   _ _ }
 "module"         { Token Tok_Module    _ _ }
 "extmodule"      { Token Tok_Extmodule _ _ }
@@ -31,10 +29,51 @@ dedent         { Token Tok_Dedent   _ _ }
 "input"          { Token Tok_Input     _ _ }
 "output"         { Token Tok_Output    _ _ }
 
+"when"           { Token Tok_When      _ _ }
+"else"           { Token Tok_Else      _ _ }
+
 "wire"           { Token Tok_Wire      _ _ }
 "node"           { Token Tok_Node      _ _ }
+"stop"           { Token Tok_Stop      _ _ }
+"skip"           { Token Tok_Skip      _ _ }
 
 "reset"          { Token Tok_Reset     _ _ }
+"printf"         { Token Tok_Printf    _ _ }
+
+"mux"              { Token Tok_Mux     _ _ }
+
+"add"              { Token Tok_Add     _ _ }
+"sub"              { Token Tok_Sub     _ _ }
+"mul"              { Token Tok_Mul     _ _ }
+"div"              { Token Tok_Div     _ _ }
+"mod"              { Token Tok_Mod     _ _ }
+"lt"               { Token Tok_Lt      _ _ }
+"leq"              { Token Tok_Leq     _ _ }
+"gt"               { Token Tok_Gt      _ _ }
+"geq"              { Token Tok_Geq     _ _ }
+"eq"               { Token Tok_Eq      _ _ }
+"neq"              { Token Tok_Neq     _ _ }
+"pad"              { Token Tok_Pad     _ _ }
+"shl"              { Token Tok_Shl     _ _ }
+"shr"              { Token Tok_Shr     _ _ }
+"dshl"             { Token Tok_Dshl    _ _ }
+"dshr"             { Token Tok_Dshr    _ _ }
+"cvt"              { Token Tok_Cvt     _ _ }
+"neg"              { Token Tok_Neg     _ _ }
+"not"              { Token Tok_Not     _ _ }
+"and"              { Token Tok_And     _ _ }
+"or"               { Token Tok_Or      _ _ }
+"xor"              { Token Tok_Xor     _ _ }
+"andr"             { Token Tok_Andr    _ _ }
+"orr"              { Token Tok_Orr     _ _ }
+"xorr"             { Token Tok_Xorr    _ _ }
+"cat"              { Token Tok_Cat     _ _ }
+"bits"             { Token Tok_Bits    _ _ }
+"head"             { Token Tok_Head    _ _ }
+"tail"             { Token Tok_Tail    _ _ }
+"asUInt"           { Token Tok_AsUInt  _ _ }
+"asSInt"           { Token Tok_AsSInt  _ _ }
+"asClock"          { Token Tok_AsClock _ _ }
 
 "is"             { Token Tok_Is        _ _ }
 "invalid"        { Token Tok_Invalid   _ _ }
@@ -112,9 +151,15 @@ Stmt :: { Statement }
 | Exp "is" "invalid" opt(Info) { Invalidate $1 $4 }
 | Exp "<-" Exp opt(Info) { Connect $1 $3 $4 }
 | Exp "<=" Exp opt(Info) { PartialConnect $1 $3 $4 }
+| "when" Exp ":" opt(Info) indent many(Stmt) dedent "else" ":" indent many(Stmt) dedent { Conditional $2 $4 $6 $11 }
+| "when" Exp ":" opt(Info) indent many(Stmt) dedent { Conditional $2 $4 $6 [] }
 | "node" Identifier "=" Exp opt(Info) { Node $2 $4 $5 }
 | "defname" "=" Identifier { Defname $3 }
 | "parameter" Identifier "=" Exp { Parameter $2 $4 }
+| "stop" "(" Exp "," Exp "," Int ")" opt(Info) { Stop $3 $5 $7 $9 }
+| "printf" "(" Exp "," Exp "," String "," csv(Exp) ")" opt(Info) { Printf $3 $5 $7 $9 $11 }
+| "printf" "(" Exp "," Exp "," String ")" opt(Info) { Printf $3 $5 $7 [] $9 }
+| "skip" opt(Info) { Skip $2 }
 
 
 Info :: { Info }
@@ -123,20 +168,59 @@ Info :: { Info }
 
 Exp :: { Exp }
 : Identifier { Reference $1 }
+| "UInt" opt(between("<", Int, ">")) "(" Int    ")" { UIntFromInt  $2 $4 }
+| "UInt" opt(between("<", Int, ">")) "(" String ")" { UIntFromBits $2 $4 }
+| "SInt" opt(between("<", Int, ">")) "(" Int    ")" { SIntFromInt  $2 $4 }
+| "SInt" opt(between("<", Int, ">")) "(" String ")" { SIntFromBits $2 $4 }
 | Exp "." Identifier { Subfield $1 $3 }
 | Exp "[" Int "]" { Subindex $1 $3 }
 | PrimOp "(" csv(Exp) ")" { PrimOp $1 $3 }
+| "mux" "(" Exp "," Exp "," Exp ")" { Multiplexor $3 $5 $7 }
 | Int { Integer $1 }
-| string { String (content $1) }
+| String { String $1 }
 
 
 PrimOp :: { PrimOp }
-: "bits" { Bits }
+: "add"              { Add    }
+| "sub"              { Sub    }
+| "mul"              { Mul    }
+| "div"              { Div    }
+| "mod"              { Mod    }
+| "lt"               { Lt     }
+| "leq"              { Leq    }
+| "gt"               { Gt     }
+| "geq"              { Geq    }
+| "eq"               { Eq     }
+| "neq"              { Neq    }
+| "pad"              { Pad    }
+| "shl"              { Shl    }
+| "shr"              { Shr    }
+| "dshl"             { Dshl   }
+| "dshr"             { Dshr   }
+| "cvt"              { Cvt    }
+| "neg"              { Neg    }
+| "not"              { Not    }
+| "and"              { And    }
+| "or"               { Or     }
+| "xor"              { Xor    }
+| "andr"             { Andr   }
+| "orr"              { Orr    }
+| "xorr"             { Xorr   }
+| "cat"              { Cat    }
+| "bits"             { Bits   }
+| "head"             { Head   }
+| "tail"             { Tail   }
+| "asUInt"           { AsUInt   }
+| "asSInt"           { AsSInt   }
+| "asClock"          { AsClock  }
 
 
 
 Int :: { Int }
-: number { integer $1 }
+: number { base10 $1 }
+
+String :: { Text }
+: string { content $1 }
 
 
 Identifier :: { Identifier }
@@ -174,8 +258,8 @@ parseError a = case a of
   []              -> error "Parse error: no tokens left to parse."
   Token t s p : _ -> error $ "Parse error: unexpected token '" ++ unpack s ++ "' (" ++ show t ++ ") at " ++ show p ++ "."
 
-integer :: Token -> Int
-integer = either (error . show) id . parse decimal "integer" . unpack . content
+base10 :: Token -> Int
+base10 = either (error . show) id . parse decimal "base10" . unpack . content
 
 }
 

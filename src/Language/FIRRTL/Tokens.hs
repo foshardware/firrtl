@@ -99,19 +99,19 @@ data TokenName
   | Tok_AsUInt 
   | Tok_AsSInt 
   | Tok_AsClock 
-  | Tok_Shiftleft 
-  | Tok_Shiftright 
-  | Tok_DynShiftleft 
-  | Tok_DynShiftright 
-  | Tok_Convert 
-  | Tok_Neg 
-  | Tok_Not 
-  | Tok_And 
-  | Tok_Or 
-  | Tok_Xor 
-  | Tok_AndR 
-  | Tok_OrR 
-  | Tok_XorR 
+  | Tok_Shl
+  | Tok_Shr
+  | Tok_Dshl
+  | Tok_Dshr
+  | Tok_Cvt
+  | Tok_Neg
+  | Tok_Not
+  | Tok_And
+  | Tok_Or
+  | Tok_Xor
+  | Tok_Andr
+  | Tok_Orr
+  | Tok_Xorr
   | Tok_Cat 
   | Tok_Bits 
   | Tok_Head 

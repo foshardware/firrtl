@@ -26,37 +26,11 @@ $space = [\ \t]
 
 $nonZeroDecimalDigit = [1-9]
 $decimalDigit = [0-9]
-@binaryDigit  = [0-1]
-@octalDigit   = [0-7]
-@hexDigit     = [0-9a-fA-F]
 
 $sign = [\+\-]
 
-@decimalBase = "'" [dD]
-@binaryBase  = "'" [bB]
-@octalBase   = "'" [oO]
-@hexBase     = "'" [s]? [hH]
+@decimalNumber = $decimalDigit+
 
-@binaryValue         = @binaryDigit ("_" | @binaryDigit)*
-@octalValue  = @octalDigit  ("_" | @octalDigit)*
-@hexValue    = @hexDigit    ("_" | @hexDigit)*
-
-@unsignedNumber = $decimalDigit ("_" | $decimalDigit)*
-
-@size = $sign? @unsignedNumber
-
-@decimalNumber
-  = @unsignedNumber
-  | @size? @decimalBase @unsignedNumber
-
-@binaryNumber = @size? @binaryBase @binaryValue
-@octalNumber  = @size? @octalBase  @octalValue
-@hexNumber    = @size? @hexBase @hexValue
-  
--- $exp  = [eE]
-
--- @realNumber = unsignedNumber "." unsignedNumber | unsignedNumber ( "." unsignedNumber)? exp sign? unsignedNumber
-@number = @decimalNumber | @octalNumber | @binaryNumber | @hexNumber
 
 -- Strings
 
@@ -159,6 +133,7 @@ tokens :-
   "<-"               { tok Tok_Op_Partial }
 
   "validif"          { tok Tok_ValidIf }
+  "reset"            { tok Tok_Reset   }
 
   "mux"              { tok Tok_Mux }
 
@@ -174,27 +149,26 @@ tokens :-
   "eq"               { tok Tok_Eq     }
   "neq"              { tok Tok_Neq    }
   "pad"              { tok Tok_Pad    }
-  "asUInt"           { tok Tok_AsUInt     }
-  "asSInt"           { tok Tok_AsSInt     }
-  "asClock"          { tok Tok_AsClock    }
-  "shl"              { tok Tok_Shiftleft     }
-  "shr"              { tok Tok_Shiftright    }
-  "dshl"             { tok Tok_DynShiftleft  }
-  "dshr"             { tok Tok_DynShiftright }
-  "cvt"              { tok Tok_Convert }
-  "neg"              { tok Tok_Neg  }
-  "not"              { tok Tok_Not  }
-  "and"              { tok Tok_And  }
-  "or"               { tok Tok_Or   }
-  "xor"              { tok Tok_Xor  }
-  "andr"             { tok Tok_AndR }
-  "orr"              { tok Tok_OrR  }
-  "xorr"             { tok Tok_XorR }
-  "cat"              { tok Tok_Cat  }
-  "bits"             { tok Tok_Bits }
-  "head"             { tok Tok_Head }
-  "tail"             { tok Tok_Tail }
-  "reset"            { tok Tok_Reset }
+  "shl"              { tok Tok_Shl    }
+  "shr"              { tok Tok_Shr    }
+  "dshl"             { tok Tok_Dshl   }
+  "dshr"             { tok Tok_Dshr   }
+  "cvt"              { tok Tok_Cvt    }
+  "neg"              { tok Tok_Neg    }
+  "not"              { tok Tok_Not    }
+  "and"              { tok Tok_And    }
+  "or"               { tok Tok_Or     }
+  "xor"              { tok Tok_Xor    }
+  "andr"             { tok Tok_Andr   }
+  "orr"              { tok Tok_Orr    }
+  "xorr"             { tok Tok_Xorr   }
+  "cat"              { tok Tok_Cat    }
+  "bits"             { tok Tok_Bits   }
+  "head"             { tok Tok_Head   }
+  "tail"             { tok Tok_Tail   }
+  "asUInt"           { tok Tok_AsUInt   }
+  "asSInt"           { tok Tok_AsSInt   }
+  "asClock"          { tok Tok_AsClock  }
 
 
   @simpleIdentifier  { tok Tok_Ident  }
