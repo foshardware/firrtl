@@ -59,8 +59,10 @@ data TokenName
   | Tok_Depth
   | Tok_ReadLatency
   | Tok_WriteLatency
+  | Tok_Read
   | Tok_ReadUnderWrite
   | Tok_Reader
+  | Tok_Write
   | Tok_Writer
   | Tok_Readwriter
   | Tok_Inst

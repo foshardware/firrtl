@@ -143,6 +143,8 @@ tokens :-
   "cmem"             { tok Tok_Cmem    }
 
   "infer"            { tok Tok_Infer   }
+  "write"            { tok Tok_Write   }
+  "read"             { tok Tok_Read    }
   "mport"            { tok Tok_Mport   }
 
   "mux"              { tok Tok_Mux    }

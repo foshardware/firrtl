@@ -47,6 +47,8 @@ dedent         { Token Tok_Dedent   _ _ }
 "reset"          { Token Tok_Reset     _ _ }
 "printf"         { Token Tok_Printf    _ _ }
 
+"read"           { Token Tok_Read      _ _ }
+"write"          { Token Tok_Write     _ _ }
 "infer"          { Token Tok_Infer     _ _ }
 "mport"          { Token Tok_Mport     _ _ }
 
@@ -142,7 +144,6 @@ Port :: { Port }
 : Dir ComplexIdentifier ":" Type opt(Info) { Port $1 $2 $4 $5 }
 
 Dir :: { Direction }
-Dir
 : "input"  { Input  }
 | "output" { Output }
 
@@ -156,23 +157,30 @@ Type :: { Type }
 | Type "[" Int "]" { VectorType $1 $3 }
 
 Field :: { Field }
-: opt(Flip) ComplexIdentifier ":" Type { Field $1 $2 $4 }
+: opt(Flip) Key ":" Type { Field $1 $2 $4 }
+
+Key :: { Key }
+: ComplexIdentifier { $1 }
+| Int { pack (show $1) }
 
 Flip :: { Flip }
 : "flip" { Flip }
 
 Stmt :: { Statement }
-: "wire" Identifier ":" Type opt(Info) { Wire $2 $4 $5 }
-| "reg" Identifier ":" Type "," Exp opt(WithReset) opt(Info) { Register $2 $4 $6 $7 $8 }
-| "cmem" Identifier ":" Type opt(Info) { Cmem $2 $4 $5 }
-| "inst" Identifier "of" Identifier opt(Info) { Instance $2 $4 $5 }
-| "infer" "mport" Identifier "=" Exp "," Identifier opt(Info) { Mport $3 $5 $7 $8 }
+: "wire" ComplexIdentifier ":" Type opt(Info) { Wire $2 $4 $5 }
+| "reg" ComplexIdentifier ":" Type "," Exp opt(WithReset) opt(Info) { Register $2 $4 $6 $7 $8 }
+| "cmem" ComplexIdentifier ":" Type opt(Info) { Cmem $2 $4 $5 }
+| "smem" ComplexIdentifier ":" Type opt(Info) { Smem $2 $4 $5 }
+| "inst" ComplexIdentifier "of" Identifier opt(Info) { Instance $2 $4 $5 }
+| "read" "mport" Identifier "=" Exp "," Identifier opt(Info) { Read $3 $5 $7 $8 }
+| "write" "mport" Identifier "=" Exp "," Identifier opt(Info) { Write $3 $5 $7 $8 }
+| "infer" "mport" Identifier "=" Exp "," Identifier opt(Info) { Infer $3 $5 $7 $8 }
 | Exp "is" "invalid" opt(Info) { Invalidate $1 $4 }
 | Exp "<-" Exp opt(Info) { Connect $1 $3 $4 }
 | Exp "<=" Exp opt(Info) { PartialConnect $1 $3 $4 }
 | "when" Exp ":" opt(Info) indent many(Stmt) dedent "else" ":" opt(Info) indent many(Stmt) dedent { Conditional $2 $4 $6 $10 $12 }
 | "when" Exp ":" opt(Info) indent many(Stmt) dedent { Conditional $2 $4 $6 Nothing [] }
-| "node" Identifier "=" Exp opt(Info) { Node $2 $4 $5 }
+| "node" ComplexIdentifier "=" Exp opt(Info) { Node $2 $4 $5 }
 | "defname" "=" Identifier { Defname $3 }
 | "parameter" Identifier "=" Exp { Parameter $2 $4 }
 | "stop" "(" Exp "," Exp "," Int ")" opt(Info) { Stop $3 $5 $7 $9 }
@@ -191,18 +199,18 @@ Info :: { Info }
 Exp :: { Exp }
 : ComplexIdentifier { Reference $1 }
 | Number { Number $1 }
-| Exp "." ComplexIdentifier { Subfield $1 $3 }
+| Exp "." Key { Subfield $1 $3 }
 | Exp "[" Exp "]" { Subindex $1 $3 }
 | PrimOp "(" csv(Exp) ")" { PrimOp $1 $3 }
 | String { String $1 }
 
 
 Number :: { Number }
-: "UInt" opt(between("<", Int, ">")) "(" Int    ")" { Right $ UIntFromInt  $2 $4 }
-| "UInt" opt(between("<", Int, ">")) "(" String ")" { Right $ UIntFromBits $2 $4 }
-| "SInt" opt(between("<", Int, ">")) "(" Int    ")" { Right $ SIntFromInt  $2 $4 }
-| "SInt" opt(between("<", Int, ">")) "(" String ")" { Right $ SIntFromBits $2 $4 }
-| Int { Left $1 }
+: "UInt" opt(between("<", Int, ">")) "(" Int    ")" { UIntFromInt  $2 $4 }
+| "UInt" opt(between("<", Int, ">")) "(" String ")" { UIntFromBits $2 $4 }
+| "SInt" opt(between("<", Int, ">")) "(" Int    ")" { SIntFromInt  $2 $4 }
+| "SInt" opt(between("<", Int, ">")) "(" String ")" { SIntFromBits $2 $4 }
+| Int { Integer $1 }
 
 
 PrimOp :: { PrimOp }
@@ -259,6 +267,18 @@ Identifier :: { Identifier }
 keywordIdentifier :: { Identifier }
 : "bits"   { pack "bits"   }
 | "reset"  { pack "reset"  }
+| "mux"    { pack "mux"    }
+| "add"    { pack "add"    }
+| "mul"    { pack "mul"    }
+| "div"    { pack "div"    }
+| "eq"     { pack "eq"     }
+| "lt"     { pack "lt"     }
+| "gt"     { pack "gt"     }
+| "mem"    { pack "mem"    }
+| "inst"   { pack "inst"   }
+| "read"   { pack "read"   }
+| "write"  { pack "write"  }
+| "invalid"  { pack "invalid"  }
 
 
 

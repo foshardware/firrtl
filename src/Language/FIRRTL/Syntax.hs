@@ -32,16 +32,26 @@ data Type
   | VectorType Type Int
   deriving (Eq, Show)
 
-data Field = Field (Maybe Flip) Identifier Type
+
+data Field = Field (Maybe Flip) Key Type
   deriving (Eq, Show)
+
+data Flip = Flip
+  deriving (Eq, Show)
+
+type Key = Identifier
+
 
 data Statement
   = Wire Identifier Type (Maybe Info)
   | Register Identifier Type Exp (Maybe (Exp, Exp)) (Maybe Info)
   | Cmem Identifier Type (Maybe Info)
+  | Smem Identifier Type (Maybe Info)
   | Memory Identifier (Maybe Info) Type Int Int Int RuW [Identifier] [Identifier] [Identifier]
   | Instance Identifier Identifier (Maybe Info)
-  | Mport Identifier Exp Identifier (Maybe Info)
+  | Read Identifier Exp Identifier (Maybe Info)
+  | Write Identifier Exp Identifier (Maybe Info)
+  | Infer Identifier Exp Identifier (Maybe Info)
   | Node Identifier Exp (Maybe Info)
   | Connect Exp Exp (Maybe Info)
   | PartialConnect Exp Exp (Maybe Info)
@@ -58,20 +68,17 @@ data Statement
 data RuW = Old | New | Undefined
   deriving (Eq, Show)
 
-data Flip = Flip
-  deriving (Eq, Show)
 
 newtype Info = Info Text
   deriving (Eq, Show)
 
 
-type Number = Either Int Numeral
-
-data Numeral
+data Number
   = UIntFromInt  (Maybe Int) Int
   | UIntFromBits (Maybe Int) Text
   | SIntFromInt  (Maybe Int) Int
   | SIntFromBits (Maybe Int) Text
+  | Integer Int
   deriving (Eq, Show)
 
 data Exp
