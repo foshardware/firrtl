@@ -64,20 +64,27 @@ data Flip = Flip
 newtype Info = Info Text
   deriving (Eq, Show)
 
-data Exp
+
+type Number = Either Int Numeral
+
+data Numeral
   = UIntFromInt  (Maybe Int) Int
   | UIntFromBits (Maybe Int) Text
   | SIntFromInt  (Maybe Int) Int
   | SIntFromBits (Maybe Int) Text
+  deriving (Eq, Show)
+
+data Exp
+  = Number Number
   | Reference Identifier
   | Subfield Exp Identifier
-  | Subindex Exp Exp
+  | Subindex Exp Number
   | Subaccess Exp Exp
   | ValidIf Exp Exp
   | PrimOp PrimOp [Exp]
-  | Integer Int
   | String Text
   deriving (Eq, Show)
+
 
 data PrimOp
   = Mux

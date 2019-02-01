@@ -3,6 +3,7 @@
 module Language.FIRRTL.Parser where
 
 import Data.Text (Text, pack, unpack)
+import qualified Data.Text as T
 
 import Text.Parsec
 import Text.ParserCombinators.Parsec.Number
@@ -189,15 +190,19 @@ Info :: { Info }
 
 Exp :: { Exp }
 : ComplexIdentifier { Reference $1 }
-| "UInt" opt(between("<", Int, ">")) "(" Int    ")" { UIntFromInt  $2 $4 }
-| "UInt" opt(between("<", Int, ">")) "(" String ")" { UIntFromBits $2 $4 }
-| "SInt" opt(between("<", Int, ">")) "(" Int    ")" { SIntFromInt  $2 $4 }
-| "SInt" opt(between("<", Int, ">")) "(" String ")" { SIntFromBits $2 $4 }
+| Number { Number $1 }
 | Exp "." ComplexIdentifier { Subfield $1 $3 }
-| Exp "[" Exp "]" { Subindex $1 $3 }
+| Exp "[" Number "]" { Subindex $1 $3 }
 | PrimOp "(" csv(Exp) ")" { PrimOp $1 $3 }
-| Int { Integer $1 }
 | String { String $1 }
+
+
+Number :: { Number }
+: "UInt" opt(between("<", Int, ">")) "(" Int    ")" { Right $ UIntFromInt  $2 $4 }
+| "UInt" opt(between("<", Int, ">")) "(" String ")" { Right $ UIntFromBits $2 $4 }
+| "SInt" opt(between("<", Int, ">")) "(" Int    ")" { Right $ SIntFromInt  $2 $4 }
+| "SInt" opt(between("<", Int, ">")) "(" String ")" { Right $ SIntFromBits $2 $4 }
+| Int { Left $1 }
 
 
 PrimOp :: { PrimOp }
@@ -241,7 +246,7 @@ Int :: { Int }
 : number { base10 $1 }
 
 String :: { Text }
-: string { content $1 }
+: string { strip $1 }
 
 
 ComplexIdentifier :: { Identifier }
@@ -285,6 +290,9 @@ parseError a = case a of
 
 base10 :: Token -> Int
 base10 = either (error . show) id . parse decimal "base10" . unpack . content
+
+strip :: Token -> Text
+strip = T.tail . T.init . content
 
 }
 
