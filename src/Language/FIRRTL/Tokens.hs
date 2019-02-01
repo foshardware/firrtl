@@ -45,7 +45,12 @@ data TokenName
   | Tok_With
   | Tok_Reset
   | Tok_Wire
+  | Tok_Infer
+  | Tok_Mport
   | Tok_Reg
+  | Tok_Cmem
+  | Tok_Smem
+  | Tok_Mem
   | Tok_DataType
   | Tok_Depth
   | Tok_ReadLatency

@@ -16,7 +16,6 @@ import Language.FIRRTL.Tokens
 %tokentype { Token }
 %error { parseError }
 
-%expect 0
 
 %token
 
@@ -32,6 +31,10 @@ dedent         { Token Tok_Dedent   _ _ }
 
 "when"           { Token Tok_When      _ _ }
 "else"           { Token Tok_Else      _ _ }
+
+"mem"            { Token Tok_Mem       _ _ }
+"cmem"           { Token Tok_Cmem      _ _ }
+"smem"           { Token Tok_Smem      _ _ }
 
 "wire"           { Token Tok_Wire      _ _ }
 "reg"            { Token Tok_Reg       _ _ }
@@ -80,6 +83,8 @@ dedent         { Token Tok_Dedent   _ _ }
 
 "is"             { Token Tok_Is        _ _ }
 "invalid"        { Token Tok_Invalid   _ _ }
+"inst"           { Token Tok_Inst      _ _ }
+"of"             { Token Tok_Of        _ _ }
 
 
 "defname"        { Token Tok_Defname   _ _ }
@@ -131,7 +136,7 @@ Module :: { Module }
 | "extmodule" Identifier ":" opt(Info) indent many(Port) many(Stmt) dedent { ExternalModule $2 $4 $6 $7 }
 
 Port :: { Port }
-: Dir Identifier ":" Type opt(Info) { Port $1 $2 $4 $5 }
+: Dir ComplexIdentifier ":" Type opt(Info) { Port $1 $2 $4 $5 }
 
 Dir :: { Direction }
 Dir
@@ -148,13 +153,16 @@ Type :: { Type }
 | Type "[" Int "]" { VectorType $1 $3 }
 
 Field :: { Field }
-: opt(Flip) Identifier ":" Type { Field $1 $2 $4 }
+: opt(Flip) ComplexIdentifier ":" Type { Field $1 $2 $4 }
 
 Flip :: { Flip }
 : "flip" { Flip }
 
 Stmt :: { Statement }
 : "wire" Identifier ":" Type opt(Info) { Wire $2 $4 $5 }
+| "reg" Identifier ":" Type "," Exp opt(WithReset) opt(Info) { Register $2 $4 $6 $7 $8 }
+| "cmem" Identifier ":" Type opt(Info) { Cmem $2 $4 $5 }
+| "inst" Identifier "of" Identifier opt(Info) { Instance $2 $4 $5 }
 | Exp "is" "invalid" opt(Info) { Invalidate $1 $4 }
 | Exp "<-" Exp opt(Info) { Connect $1 $3 $4 }
 | Exp "<=" Exp opt(Info) { PartialConnect $1 $3 $4 }
@@ -168,19 +176,22 @@ Stmt :: { Statement }
 | "printf" "(" Exp "," Exp "," String ")" opt(Info) { Printf $3 $5 $7 [] $9 }
 | "skip" opt(Info) { Skip $2 }
 
+WithReset :: { (Exp, Exp) }
+: "with" ":" "(" "reset" "=>" "(" Exp "," Exp ")" ")" { ($7, $9) }
+
 
 Info :: { Info }
 : info { Info(content $1) }
 
 
 Exp :: { Exp }
-: Identifier { Reference $1 }
+: ComplexIdentifier { Reference $1 }
 | "UInt" opt(between("<", Int, ">")) "(" Int    ")" { UIntFromInt  $2 $4 }
 | "UInt" opt(between("<", Int, ">")) "(" String ")" { UIntFromBits $2 $4 }
 | "SInt" opt(between("<", Int, ">")) "(" Int    ")" { SIntFromInt  $2 $4 }
 | "SInt" opt(between("<", Int, ">")) "(" String ")" { SIntFromBits $2 $4 }
-| Exp "." Identifier { Subfield $1 $3 }
-| Exp "[" Int "]" { Subindex $1 $3 }
+| Exp "." ComplexIdentifier { Subfield $1 $3 }
+| Exp "[" Exp "]" { Subindex $1 $3 }
 | PrimOp "(" csv(Exp) ")" { PrimOp $1 $3 }
 | Int { Integer $1 }
 | String { String $1 }
@@ -230,13 +241,17 @@ String :: { Text }
 : string { content $1 }
 
 
+ComplexIdentifier :: { Identifier }
+: Identifier { $1 }
+| keywordIdentifier { $1 }
+
 Identifier :: { Identifier }
 : simpleIdentifier { content $1 }
-| keywordIdentifier { $1 }
 
 keywordIdentifier :: { Identifier }
 : "bits"   { pack "bits"   }
 | "reset"  { pack "reset"  }
+
 
 
 

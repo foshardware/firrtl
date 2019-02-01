@@ -38,6 +38,7 @@ data Field = Field (Maybe Flip) Identifier Type
 data Statement
   = Wire Identifier Type (Maybe Info)
   | Register Identifier Type Exp (Maybe (Exp, Exp)) (Maybe Info)
+  | Cmem Identifier Type (Maybe Info)
   | Memory Identifier (Maybe Info) Type Int Int Int RuW [Identifier] [Identifier] [Identifier]
   | Instance Identifier Identifier (Maybe Info)
   | Node Identifier Exp (Maybe Info)
@@ -69,7 +70,7 @@ data Exp
   | SIntFromBits (Maybe Int) Text
   | Reference Identifier
   | Subfield Exp Identifier
-  | Subindex Exp Int
+  | Subindex Exp Exp
   | Subaccess Exp Exp
   | ValidIf Exp Exp
   | PrimOp PrimOp [Exp]

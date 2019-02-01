@@ -138,8 +138,14 @@ tokens :-
   "validif"          { tok Tok_ValidIf }
   "reset"            { tok Tok_Reset   }
 
-  "mux"              { tok Tok_Mux }
+  "mem"              { tok Tok_Mem     }
+  "smem"             { tok Tok_Smem    }
+  "cmem"             { tok Tok_Cmem    }
 
+  "infer"            { tok Tok_Infer   }
+  "mport"            { tok Tok_Mport   }
+
+  "mux"              { tok Tok_Mux    }
   "add"              { tok Tok_Add    }
   "sub"              { tok Tok_Sub    }
   "mul"              { tok Tok_Mul    }
