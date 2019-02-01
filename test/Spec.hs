@@ -16,11 +16,11 @@ import Language.FIRRTL.Parser
 
 main :: IO ()
 main = defaultMain $ testGroup "FIR"
-  [ ansi_header
+  [ rocket_chip
   ]
 
-ansi_header :: TestTree
-ansi_header = testGroup "Rocket chip"
+rocket_chip :: TestTree
+rocket_chip = testGroup "Rocket chip"
   [ testCase "test_harness.fir" $ parse $ circuit $ lexer [] $ decodeUtf8 $(embedFile "sample/test_harness.fir")
   ]
 
