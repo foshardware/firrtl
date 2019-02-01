@@ -32,6 +32,7 @@ dedent         { Token Tok_Dedent   _ _ }
 "output"         { Token Tok_Output    _ _ }
 
 "wire"           { Token Tok_Wire      _ _ }
+"node"           { Token Tok_Node      _ _ }
 
 "reset"          { Token Tok_Reset     _ _ }
 
@@ -111,17 +112,27 @@ Stmt :: { Statement }
 | Exp "is" "invalid" opt(Info) { Invalidate $1 $4 }
 | Exp "<-" Exp opt(Info) { Connect $1 $3 $4 }
 | Exp "<=" Exp opt(Info) { PartialConnect $1 $3 $4 }
+| "node" Identifier "=" Exp opt(Info) { Node $2 $4 $5 }
 | "defname" "=" Identifier { Defname $3 }
-| "parameter" Identifier "=" Int { Parameter $2 (Left $4) }
-| "parameter" Identifier "=" string { Parameter $2 (Right $ content $4) }
+| "parameter" Identifier "=" Exp { Parameter $2 $4 }
+
 
 Info :: { Info }
 : info { Info(content $1) }
+
 
 Exp :: { Exp }
 : Identifier { Reference $1 }
 | Exp "." Identifier { Subfield $1 $3 }
 | Exp "[" Int "]" { Subindex $1 $3 }
+| PrimOp "(" csv(Exp) ")" { PrimOp $1 $3 }
+| Int { Integer $1 }
+| string { String (content $1) }
+
+
+PrimOp :: { PrimOp }
+: "bits" { Bits }
+
 
 
 Int :: { Int }

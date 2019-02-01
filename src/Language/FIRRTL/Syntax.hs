@@ -49,7 +49,7 @@ data Statement
   | Stop Exp Exp Int (Maybe Info)
   | Printf Exp Exp String [Exp] (Maybe Info)
   | Defname Identifier
-  | Parameter Identifier (Either Int Text)
+  | Parameter Identifier Exp
   deriving (Eq, Show)
 
 data RuW = Old | New | Undefined
@@ -72,6 +72,11 @@ data Exp
   | Subaccess Exp Exp
   | Multiplexor Exp Exp Exp
   | ValidIf Exp Exp
-  | PrimOp [Exp] [Int]
+  | PrimOp PrimOp [Exp]
+  | Integer Int
+  | String Text
   deriving (Eq, Show)
 
+data PrimOp
+  = Bits
+  deriving (Eq, Show)
