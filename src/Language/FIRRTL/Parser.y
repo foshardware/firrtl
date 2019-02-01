@@ -192,7 +192,7 @@ Exp :: { Exp }
 : ComplexIdentifier { Reference $1 }
 | Number { Number $1 }
 | Exp "." ComplexIdentifier { Subfield $1 $3 }
-| Exp "[" Number "]" { Subindex $1 $3 }
+| Exp "[" Exp "]" { Subindex $1 $3 }
 | PrimOp "(" csv(Exp) ")" { PrimOp $1 $3 }
 | String { String $1 }
 

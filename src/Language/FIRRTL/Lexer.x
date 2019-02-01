@@ -34,8 +34,8 @@ $sign = [\+\-]
 
 -- Strings
 
-@string_unquoted = [^\r\n]*
-@string = \" [^\r\n\"]* \"
+@string_unquoted = (\\. | [^\"\\])*
+@string = \" (\\. | [^\"\\])* \"
 
 -- Identifiers
 

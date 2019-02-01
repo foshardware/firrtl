@@ -78,7 +78,7 @@ data Exp
   = Number Number
   | Reference Identifier
   | Subfield Exp Identifier
-  | Subindex Exp Number
+  | Subindex Exp Exp
   | Subaccess Exp Exp
   | ValidIf Exp Exp
   | PrimOp PrimOp [Exp]
