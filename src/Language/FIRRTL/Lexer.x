@@ -194,6 +194,7 @@ tokens :-
   "bits"             { tok Tok_Bits }
   "head"             { tok Tok_Head }
   "tail"             { tok Tok_Tail }
+  "reset"            { tok Tok_Reset }
 
 
   @simpleIdentifier  { tok Tok_Ident  }

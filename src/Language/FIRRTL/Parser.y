@@ -2,7 +2,7 @@
 
 module Language.FIRRTL.Parser where
 
-import Data.Text (Text, unpack)
+import Data.Text (Text, pack, unpack)
 
 import Text.Parsec
 import Text.ParserCombinators.Parsec.Number
@@ -23,6 +23,7 @@ indent         { Token Tok_Indent   _ _ }
 dedent         { Token Tok_Dedent   _ _ }
 
 "add"            { Token Tok_Add       _ _ }
+"bits"           { Token Tok_Bits      _ _ }
 "circuit"        { Token Tok_Circuit   _ _ }
 "module"         { Token Tok_Module    _ _ }
 "extmodule"      { Token Tok_Extmodule _ _ }
@@ -31,6 +32,8 @@ dedent         { Token Tok_Dedent   _ _ }
 "output"         { Token Tok_Output    _ _ }
 
 "wire"           { Token Tok_Wire      _ _ }
+
+"reset"          { Token Tok_Reset     _ _ }
 
 "is"             { Token Tok_Is        _ _ }
 "invalid"        { Token Tok_Invalid   _ _ }
@@ -124,8 +127,15 @@ Exp :: { Exp }
 Int :: { Int }
 : number { integer $1 }
 
+
 Identifier :: { Identifier }
 : simpleIdentifier { content $1 }
+| keywordIdentifier { $1 }
+
+keywordIdentifier :: { Identifier }
+: "bits"   { pack "bits"   }
+| "reset"  { pack "reset"  }
+
 
 
 csv(p)

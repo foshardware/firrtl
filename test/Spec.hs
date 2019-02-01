@@ -7,7 +7,6 @@ import Data.Text.Encoding
 
 import Language.FIRRTL.Lexer
 import Language.FIRRTL.Parser
-import Language.FIRRTL.Preprocessor
 
 
 main :: IO ()
