@@ -320,9 +320,8 @@ instance Show ParseError where
     ]
 
 parseError :: [Token] -> Either ParseError a
-parseError a = case a of
-  t : _ -> Left $ Unexpected t
-  _     -> Left Exhausted
+parseError (t : _) = Left $ Unexpected t
+parseError _ = Left Exhausted
 
 
 base10 :: Token -> Int
