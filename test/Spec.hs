@@ -2,7 +2,8 @@
 
 module Main where
 
-import Control.Exception (evaluate)
+import Control.Exception
+import Control.Monad
 
 import Data.FileEmbed
 import Data.Text.Encoding
@@ -24,5 +25,5 @@ rocket_chip = testGroup "Rocket chip"
   [ testCase "test_harness.fir" $ parse $ circuit $ lexer [] $ decodeUtf8 $(embedFile "sample/test_harness.fir")
   ]
 
-parse :: Show a => a -> IO ()
-parse s = () <$ evaluate s
+parse :: Either ParseError a -> IO ()
+parse s = void $ either throwIO pure =<< evaluate s

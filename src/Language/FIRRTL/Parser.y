@@ -2,10 +2,12 @@
 
 module Language.FIRRTL.Parser where
 
+import Control.Exception
+
 import Data.Text (Text, pack, unpack)
 import qualified Data.Text as T
 
-import Text.Parsec
+import Text.Parsec hiding (try, ParseError(..))
 import Text.ParserCombinators.Parsec.Number
 
 import Language.FIRRTL.Syntax
@@ -16,6 +18,7 @@ import Language.FIRRTL.Tokens
 %name circuit
 %tokentype { Token }
 %error { parseError }
+%monad { Either ParseError } { (>>=) } { return }
 
 
 %token
@@ -303,10 +306,24 @@ between(a, p, b)
 : a p b { $2 }
 
 {
-parseError :: [Token] -> a
+
+data ParseError = Exhausted | Unexpected Token
+
+instance Exception ParseError
+
+instance Show ParseError where
+  show Exhausted = "no tokens left to parse."
+  show (Unexpected (Token t s p)) = unwords
+    [ "unexpected token"
+    , "'" ++ unpack s ++ "'", "(" ++ show t ++ ")"
+    , "at", show p ++ "."
+    ]
+
+parseError :: [Token] -> Either ParseError a
 parseError a = case a of
-  []              -> error "Parse error: no tokens left to parse."
-  Token t s p : _ -> error $ "Parse error: unexpected token '" ++ unpack s ++ "' (" ++ show t ++ ") at " ++ show p ++ "."
+  t : _ -> Left $ Unexpected t
+  _     -> Left Exhausted
+
 
 base10 :: Token -> Int
 base10 = either (error . show) id . parse decimal "base10" . unpack . content
